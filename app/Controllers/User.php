@@ -50,8 +50,86 @@ class User extends BaseController
         return redirect()->to('/login');
     }
     
-    public function adduser()
-    {
-        return view('adduser');
+   public function adduser()
+{
+    if ($this->request->getMethod() === 'POST') {
+
+        // Validation rules (use field names)
+        $rules = [
+            'name' => 'required|min_length[2]|max_length[30]',
+            'email' => 'required|valid_email',
+            'password' => 'required|min_length[6]',
+            'status' => 'required|in_list[0,1]',
+        ];
+
+        // Validate
+        if (!$this->validate($rules)) {
+            return view('adduser', [
+                'errors' => $this->validator->getErrors()
+            ]);
+        }
+
+        // Get validated data
+        $name     = $this->request->getPost('name');
+        $email    = $this->request->getPost('email');
+        $password = password_hash(
+            $this->request->getPost('password'),
+            PASSWORD_DEFAULT
+        );
+        $status   = $this->request->getPost('status');
+         $this->usermodel->save([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'status' => $status
+        ]);
+        return redirect()->to('/dashboard')->with('success', 'User added successfully');
     }
+
+    return view('adduser');
+}
+    public function list(){
+         $result =  $this->usermodel->findAll();
+         return view('list' , ["list" =>$result]);         
+    }
+    public function edit($id){
+        $result = $this->usermodel->find($id);
+        return view('edit' , ['user'=>$result]);
+    }
+
+    public function updateuser($id){
+        $rules = [
+            'name' => 'required|min_length[2]|max_length[30]',
+            'email' => 'required|valid_email',
+            'status' => 'required|in_list[0,1]',
+        ];
+
+        // Validate
+        if (!$this->validate($rules)) {
+            return view('edit', [
+                'errors' => $this->validator->getErrors()
+            ]);
+        }
+
+        // Get validated data
+        $data=[
+        'id' =>$this->request->getPost('id'),
+        "name"     => $this->request->getPost('name'),
+        "email"    => $this->request->getPost('email'),
+        "password" => password_hash(
+            $this->request->getPost('password'),
+            PASSWORD_DEFAULT
+        ),
+        "status"   => $this->request->getPost('status')
+    ];
+         $this->usermodel->updatedata($data);
+    
+        return redirect()->to('/list');
+    }
+    public function deleteuser($id){
+         $this->usermodel->deleteuser($id);
+    
+        return redirect()->to('/list')->with('success', 'User deleted successfully');;
+    }
+
 }

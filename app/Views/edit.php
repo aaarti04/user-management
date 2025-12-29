@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add User</title>
+    <title>Edit User</title>
 
     <style>
         * {
@@ -23,7 +23,7 @@
 
         .form-box {
             background: #fff;
-            width: 400px;
+            width: 420px;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -49,7 +49,6 @@
             border-radius: 6px;
             border: 1px solid #ccc;
             outline: none;
-            transition: 0.3s;
         }
 
         input:focus, select:focus {
@@ -71,11 +70,6 @@
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #5a67d8;
         }
 
         .back {
@@ -86,44 +80,52 @@
         .back:hover {
             background: #cbd5e1;
         }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
     <div class="form-box">
-        <h1>Add User</h1>
-       <?php if (isset($errors)): ?>
-    <div style="color:red;">
-        <ul>
-            <?php foreach ($errors as $error): ?>
-                <li><?= esc($error) ?></li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-<?php endif; ?>
+        <h1>Edit User</h1>
 
-        <form action="/add-user" method="post">
-            <?= csrf_field(); ?>
+        <!-- Validation Errors -->
+        <?php if (isset($errors)): ?>
+            <div class="error">
+                <ul>
+                    <?php foreach ($errors as $error): ?>
+                        <li><?= esc($error) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+
+        <form action="/update/<?= $user['id'] ?>" method="post">
             <label>Name</label>
-            <input type="text" name="name" placeholder="Enter full name" required>
+            <input type="hidden" name="id" value="<?= $user['id'] ?>">
+            <input type="text" name="name"
+                   value="<?= esc($user['name']) ?>" required>
 
             <label>Email</label>
-            <input type="email" name="email" placeholder="Enter email address" required>
-
-            <label>Password</label>
-            <input type="password" name="password" placeholder="Enter password" required>
+            <input type="email" name="email"
+                   value="<?= esc($user['email']) ?>" required>
 
             <label>Status</label>
             <select name="status" required>
-                <option value="">-- Select Status --</option>
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
+                <option value="1" <?= $user['status'] == 1 ? 'selected' : '' ?>>Active</option>
+                <option value="0" <?= $user['status'] == 0 ? 'selected' : '' ?>>Inactive</option>
             </select>
 
             <div class="btn-group">
-                <button type="submit">Save User</button>
-                <a href="/dashboard">
-                    <button type="button" class="back">Back</button>
+                <button type="submit">Update User</button>
+                <a href="/list">
+                    <button type="button" class="back">Cancel</button>
                 </a>
             </div>
         </form>
