@@ -30,6 +30,7 @@ class User extends BaseController
                 // Successful login
             } else {
                 // Failed login
+                helper['form'];
                 return view('login', ['error' => 'Invalid email or password']);
             }
          

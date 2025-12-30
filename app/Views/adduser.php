@@ -1,95 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add User</title>
+<?= $this->extend('layout') ?>
+<?= $this->section('content') ?>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            background: #f4f6f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .form-box {
-            background: #fff;
-            width: 400px;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-
-        .form-box h1 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: #555;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 18px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input:focus, select:focus {
-            border-color: #667eea;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: #667eea;
-            color: #fff;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #5a67d8;
-        }
-
-        .back {
-            background: #e2e8f0;
-            color: #333;
-        }
-
-        .back:hover {
-            background: #cbd5e1;
-        }
-    </style>
-</head>
-<body>
-
+<div class="mid_container">
     <div class="form-box">
         <h1>Add User</h1>
        <?php if (isset($errors)): ?>
@@ -102,7 +14,7 @@
     </div>
 <?php endif; ?>
 
-        <form action="/add-user" method="post">
+        <form action="/add-user" method="post"  id="addUserForm">
             <?= csrf_field(); ?>
             <label>Name</label>
             <input type="text" name="name" placeholder="Enter full name" required>
@@ -111,11 +23,15 @@
             <input type="email" name="email" placeholder="Enter email address" required>
 
             <label>Password</label>
-            <input type="password" name="password" placeholder="Enter password" required>
+            <input type="password" name="password" placeholder="Enter password" id="password" required>
 
+             <label>Confirm Password</label>
+            <input type="password" name="confirm_password" placeholder="Enter password"  id="confirm_password" required>
+            <small id="pass_error" style="color:red; display:none;">
+                Passwords do not match
+            </small>
             <label>Status</label>
             <select name="status" required>
-                <option value="">-- Select Status --</option>
                 <option value="1">Active</option>
                 <option value="0">Inactive</option>
             </select>
@@ -128,6 +44,43 @@
             </div>
         </form>
     </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
 
-</body>
-</html>
+    const form = document.getElementById('addUserForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const errorText = document.getElementById('pass_error');
+
+    function checkPasswordMatch() {
+        if (confirmPassword.value === '') {
+            errorText.style.display = 'none';
+            confirmPassword.style.borderColor = '';
+            return;
+        }
+
+        if (password.value === confirmPassword.value) {
+            errorText.style.display = 'none';
+            confirmPassword.style.borderColor = 'green';
+        } else {
+            errorText.style.display = 'block';
+            confirmPassword.style.borderColor = 'red';
+        }
+    }
+
+    password.addEventListener('keyup', checkPasswordMatch);
+    confirmPassword.addEventListener('keyup', checkPasswordMatch);
+
+    // 🚨 STOP FORM SUBMISSION HERE
+    form.addEventListener('submit', function (e) {
+        if (password.value !== confirmPassword.value) {
+            e.preventDefault(); // ⛔ stops submit
+            alert('Passwords do not match');
+            confirmPassword.focus();
+        }
+    });
+
+});
+</script>
+
+<?= $this->endSection() ?>
