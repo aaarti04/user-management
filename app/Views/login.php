@@ -16,6 +16,9 @@
             <input type="password" name="password" placeholder="Enter your password" required>
 
             <button type="submit">Login</button>
+            <div class = "forgot_password">
+              <a href="/forgot-password">Forgot Password</a>
+            </div>
         </form>
        
     </div>

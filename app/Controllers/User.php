@@ -132,5 +132,47 @@ class User extends BaseController
     
         return redirect()->to('/list')->with('success', 'User deleted successfully');;
     }
+  public function forgot_password(){
+{
+    if ($this->request->getMethod() === 'post') {
 
+        $recaptchaResponse = $this->request->getPost('g-recaptcha-response');
+
+        if (empty($recaptchaResponse)) {
+            return redirect()->back()
+                ->with('error', 'Please verify CAPTCHA');
+        }
+
+        // Verify CAPTCHA
+        $secretKey = '6LfLbkQsAAAAAO3jyArNuU8JsRyGjdg5vNiO4sT1';
+
+        $verifyResponse = file_get_contents(
+            "https://www.google.com/recaptcha/api/siteverify?secret="
+            . $secretKey .
+            "&response=" . $recaptchaResponse
+        );
+
+        $responseData = json_decode($verifyResponse);
+
+        if (!$responseData->success) {
+            return redirect()->back()
+                ->with('error', 'CAPTCHA verification failed');
+        }
+
+        // ✅ CAPTCHA passed → continue forgot password logic
+        $email = $this->request->getPost('email');
+
+        // TODO:
+        // 1. Check email exists
+        // 2. Generate token
+        // 3. Send reset link
+
+        return redirect()->back()
+            ->with('success', 'Password reset link sent to email');
+    }
+
+    return view('forgot_password');
+
+  }
+}
 }
